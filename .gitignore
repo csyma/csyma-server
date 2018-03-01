@@ -1,0 +1,7 @@
+node_modules
+todo
+config.*.js
+tests_
+*.bac
+*.log
+*.logs
