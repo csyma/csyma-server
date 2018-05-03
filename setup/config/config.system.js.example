@@ -85,7 +85,7 @@ const config = {
     },
     mailer: { //configure these
         mailgun: {
-            api_key:process.env.MAILGUN_API_KEY
+            api_key:process.env.MAILGUN_API_KEY,
             domain:process.env.MAILGUN_DOMAIN
         },
         ,
