@@ -64,7 +64,7 @@ replaceDatabases?() {
 			tput setaf 2;  echo "Mr. Brian has created $MYSQLDB_DBNAME_DEV for you"; tput sgr0 
 
 		} || { 
-			mysql -h "$MYSQLDB_HOST" -u$MYSQLDB_USER_DEV -p"$MYSQLDB_PASS" -e "DROP DATABASE $MYSQLDB_DBNAME; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
+			mysql -h "$MYSQLDB_HOST" -u$MYSQLDB_USER -p"$MYSQLDB_PASS" -e "DROP DATABASE $MYSQLDB_DBNAME; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
  			tput setaf 2;  echo "Mr. Brian has created $MYSQLDB_DBNAME for you"; tput sgr0 
 		}
 	}
