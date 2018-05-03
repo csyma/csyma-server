@@ -221,7 +221,7 @@ main() {
 	#start server
 	{
 		cd ../
-		node app.js
+		node bin/app.js
 		tput bold;  echo -n "Mr. Brian: "; tput sgr0
 		tput setaf 2;  echo "$user, your setup is done. Goto $URL:$PORT to see your new application"; tput sgr0
 		tput setaf 2;  echo "Mr. Brian has now to go and do other duties. But you can always reach him with queries @ $AUTHOR_EMAIL"; tput sgr0
