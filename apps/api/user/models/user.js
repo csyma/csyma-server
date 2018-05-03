@@ -7,6 +7,9 @@ async function hashPassword(user, options){
 	if(!user.changed('Password')){
 		return
 	}
+
+	if(!user.Cpassword)
+		return Promise.reject({code:1002, msg:"Please confirm your password"});
 	if(user.Cpassword)
 		if(user.Password !== user.Cpassword)
 			return Promise.reject({code:1002, msg:"Passwords don't match"});
@@ -98,18 +101,19 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	// User.associate = function (models) {
-	//     User.hasMany(models.Farmer, {
-	//     	onDelete: "CASCADE",
-	//       foreignKey: {
-	//         allowNull: false
-	// }
-	//     });
-	// }
+	User.associate = function (models) {
+	    User.hasOne(models.Github, {
+	    	as: 'Github',
+	    	onDelete: "CASCADE",
+	      foreignKey: {
+	        allowNull: false
+	}
+	    });
+	}
 
 
-	User.prototype.comparePass = function(password){
-		return bcrypt.compareAsync(password, this.password)
+	User.prototype.comparePass = async function(password){
+		return bcrypt.compareAsync(password, this.Password)
 	}
 
 

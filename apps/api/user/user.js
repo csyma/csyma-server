@@ -4,7 +4,7 @@ const csystem = require(__dirname+"/../../csystem").csystem;
 const {sequelize} = require(__dirname+"/../../csystem").models
 const Familyfe = require(__dirname+'/../../../modules/node-familyfe')(sequelize)
 
-class auth extends csystem
+class users extends csystem
 {
 
 	constructor()
@@ -19,7 +19,7 @@ class auth extends csystem
 		let person = req.body
 		;[err, care] = await to (Familyfe.Person.beget(person))
 		if(err)return Promise.reject(err)
-		let {uid, Name, Email, IsActive} = care.dataValues
+		let {uid, Name, Email, IsActive} = care.dataValues || care
 		res.json({uid:uid, Name: Name, Email: Email, Active: IsActive})
 	}
 
@@ -133,4 +133,4 @@ class auth extends csystem
 
 }
 
-module.exports = auth
+module.exports = users

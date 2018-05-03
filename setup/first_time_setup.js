@@ -60,6 +60,7 @@ class firstTimeSetup extends csystem
 		;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
 		if(err)return Promise.reject(err)
 		console.log(care)
+		
 		//errors
 		// ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
 		// console.log(err)

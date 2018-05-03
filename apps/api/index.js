@@ -11,7 +11,7 @@ class Api extends csystem
 
 	main(req, res)
 	{
-		res.send("SOME API tests")
+		res.send("You are in the api. Please see the documentation on how to use.")
 	}
 }
 

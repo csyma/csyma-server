@@ -176,6 +176,8 @@ app.get('/', function(req, res) {
 
 // app.use('/api', apiRoutes);
 
+app.use(passport.initialize());		/////////////check
+
 {
 	let routes = {};
 	console.log("Loading routes...")
@@ -211,7 +213,6 @@ app.get('/', function(req, res) {
 // Routes ==========================================================
 // =================================================================
 
-console.log("ENDED TOURES")
 /**
  * 404
  */

@@ -65,10 +65,11 @@ class router
 
 		;[err, dontcare] = await to(app.setup(req,res))
 		try {
-			;[err, dontcare] = await to( app[newfunc](req, res))
-			if(err)throw (err)			//if func is a param instead of a function
+			;[err, dontcare] = await to( app[func](req, res))
+			if(err)throw (err)			//if func is a param instead of a function, or func does not exist
 		}catch(error) {
-			if(error.name === "TypeError")
+			console.log(error)
+			if(error.name === "TypeError" )
 				try {
 					;[err, dontcare] = await to( app["main"](req, res))
 					if(err) throw(err)

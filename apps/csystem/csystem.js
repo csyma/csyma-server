@@ -2,7 +2,8 @@
 
 const {sequelize} = require(__dirname+'/models')
 const to = require('await-to-js').to,
-	sentenceCase = require('sentence-case')
+	sentenceCase = require('sentence-case'),
+	passport = require('passport');
 
 class Csystem
 {
@@ -63,6 +64,24 @@ class Csystem
 		let ret = {}
 		for(let i in params)ret[sentenceCase(i.toLowerCase())] = params[i]
 		return ret
+	}
+
+	async isAuthenticated(req, res) {
+		let self = this
+		let __promisifiedPassportAuthentication = function () {
+		    return new Promise((resolve, reject) => {
+		    	passport.authenticate('jwt', {session: false}, (err, user, info) => {
+		        	if(err)return reject(err)
+		        	if(info)return reject({message:info.message, status:422})
+		        	// res.json(user)
+		        	return resolve(user)
+		        })(req, res) 
+		    })
+		}
+
+		return __promisifiedPassportAuthentication().catch((err)=>{
+			throw(err)
+		})
 	}
 
 	// async _try(func, wait = true)

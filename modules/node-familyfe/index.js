@@ -16,6 +16,7 @@ const  Objlen = require('object-length');
 const sentenceCase = require('sentence-case');
 const Bcrypt = require('bcrypt');
 const to = require('await-to-js').to;
+const randomstring = require('randomstring');
 // const {ObjectId} = require('mongodb');
 // const safeObjectId = s => ObjectId.isValid(s) ? new ObjectId(s) : null;
 
@@ -157,8 +158,15 @@ class Person extends abstractPerson
 	{
 		super();
 		let self = this;
-		self.attributes = ['uid', 'Name', 'Email']
+		self.attributes = ['uid', 'Name', 'Email', 'IsActive']
 		self.sequelize = sequelize
+		self.socialLogins = [
+			{model: self.sequelize.models.Github},
+			{model: self.sequelize.models.Google},
+			{model: self.sequelize.models.Facebook}
+		]
+
+		// console.log(self.sequelize.models)
 
 	}
 
@@ -237,9 +245,31 @@ class Person extends abstractPerson
 	{
 		let self = this;
 		let [err, care, dontcare] = [];
+		let githubOptions = {
+			model: self.sequelize.models.Github, as: 'Github'
+		}
+
+		if(options.github !== undefined) {
+			githubOptions.where = Object.assign({}, options.github);
+			delete options.github 
+		}
+
+		let mainOptions = { attributes:self.attributes,
+                include: 
+			 	 		[
+			 	 			githubOptions
+			 	 		]
+        }
+
+        if(Object.keys(options).length > 0)mainOptions.where = options
+
 		switch(action)
 		{
 			case "which":
+				;[err, care] = await to(self.sequelize.models.User.findOne(mainOptions ))
+				break;
+			case "whichwithPwd":
+				self.attributes.push('Password')
 				;[err, care] = await to(self.sequelize.models.User.findOne({where: options, attributes:self.attributes} ))
 				break;
 			case "update":
@@ -252,7 +282,8 @@ class Person extends abstractPerson
 		}
 		if(err)return Promise.reject({msg:err.msg||err, code:err.code||422, status:422})
 		care = care || {}
-		return JSON.parse(JSON.stringify(care))
+		// return JSON.parse(JSON.stringify(care))
+		return care
 	}
 
 	/*
@@ -262,6 +293,14 @@ class Person extends abstractPerson
 		let self = this;
 		let [err, care, dontcare] = [];
 		;[err, care] = await to(self.common(options, "which"))
+		if(err)return Promise.reject({msg:err.msg||err, code:err.code||422, status:422})
+		return care;
+	}
+
+	async whichwithPwd(options) {
+		let self = this;
+		let [err, care, dontcare] = [];
+		;[err, care] = await to(self.common(options, "whichwithPwd"))
 		if(err)return Promise.reject({msg:err.msg||err, code:err.code||422, status:422})
 		return care;
 	}
@@ -296,6 +335,56 @@ class Person extends abstractPerson
 
 		return JSON.parse(JSON.stringify(care));
 	}
+
+	async begetIn(person, place)	/*try doing this in one step*/
+	{
+		let self = this;
+		let [err, care, dontcare] = [];
+
+		//check if name||Name key exists for all
+		let password = randomstring.generate(20);
+		let firstPerson = {
+			Email: "testEmail@gmail.com" || person.email || person.Email,
+			Name: person.name || person.Name,
+			Password: password,
+			Cpassword: password,
+		}
+
+		// self.sequelize.models.User.Github = self.sequelize.models.Github.belongsTo(self.sequelize.models.User)
+
+		console.log("PASEEEEEEEEEEEEEEEEEEEEEF")
+		;[err, care] = await to(self.sequelize.models.User.create(firstPerson))
+
+		// console.log(person)
+		// console.log("Now going to create user....")
+		// console.log(care)
+		// console.log(err)
+		// console.log(care)
+
+		if(err) {
+			let {a} = err.message || err.msg
+			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
+		}
+
+		let uid = care.dataValues.uid
+		let otherPerson = {}
+		switch(place) {
+			case "github":
+				otherPerson.GithubUid = care.dataValues.uid;
+				otherPerson.gituid = person.id;
+				otherPerson.Name = "had some name...." ;
+				;[err, care] = await to(self.sequelize.models.Github.create(otherPerson))
+				break;
+		}
+
+		console.log("DONW WITH INTTE")
+		console.log(care)
+		console.log(err)
+
+		return JSON.parse(JSON.stringify(care));
+	}
+
+
 
 	identify(options, callback)
 	{
