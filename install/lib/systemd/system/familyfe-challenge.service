@@ -1,0 +1,15 @@
+[Unit]
+Description=familyfe-challenge
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/var/www/html/familyfe-challenge
+ExecStart=/var/www/html/familyfe-challenge/start.sh
+SyslogIdentifier=familyfe-challenge
+Restart=on-failure
+RestartSec=5
+
+
+[Install]
+WantedBy=multi-user.target
