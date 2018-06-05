@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 module.exports = (sequelize, DataTypes) => {
 	const Facebook = sequelize.define('Facebook', {
 		fbuid: {
-			type: DataTypes.STRING,
+			type: DataTypes.STRING(126),
 			primaryKey: true
 		},
 		token: DataTypes.STRING,

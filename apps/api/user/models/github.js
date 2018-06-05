@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 module.exports = (sequelize, DataTypes) => {
 	const Github = sequelize.define('Github', {
 		gituid: {
-			type: DataTypes.STRING,
+			type: DataTypes.STRING(126),
 			primaryKey: true
 		},
 		token: DataTypes.STRING,

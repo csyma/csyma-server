@@ -39,13 +39,17 @@ class firstTimeSetup extends csystem
 	async first_time_setup()
 	{
 		let self = this
+
+console.log('started')
 		let [err, dontcare, care] = [];
 
 		// //sync db
 		;[err, dontcare] = await to (self.dbSync(true))
+console.log('then')
+console.log(err)
 		if(err)return Promise.reject(err)
 		console.log("DB synced")
-		
+console.log()		
 		let rootEmail = globalConfig.get('/rootEmail');
 		console.log(`rootEmail: ${rootEmail}`);
 		;[err, care] = await to(self.rootPassword())
