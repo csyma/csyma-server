@@ -20,12 +20,14 @@ class router
 	{
 		let self = this;
 		let appname = req.params.app
-		let func = req.params.method,
+		let func = req.params.method || 'main',
 			newfunc
 		let appnameforApi = func
 		let funcforApi = req.params.v1 === undefined?func:req.params.v1
 		let app;
 		let [err, care, dontcare] = [];
+
+		console.log('loading page...')
 
 		try 
 		{
@@ -44,6 +46,7 @@ class router
 					app = (new (require(__dirname+`/../${appname}/${func}`)))
 					func = self.defaultMethod(req.params.v1)
 				}catch(err) {
+					console.log(err.message)
 					if(err.message !== "require(...) is not a constructor") { //the app does not exist /{app}/method/etc
 						error.message = "Not found"
 						self.errorHandler(req, res, error, next)

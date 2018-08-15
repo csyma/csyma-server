@@ -21,15 +21,15 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	Google.associate = function (models) {
-	    Google.belongsTo(models.User, {
-	    	onDelete: "CASCADE",
-	      foreignKey: {
-	        allowNull: false
-			}
-	    });
+	// Google.associate = function (models) {
+	//     Google.belongsTo(models.User, {
+	//     	onDelete: "CASCADE",
+	//       foreignKey: {
+	//         allowNull: false
+	// 		}
+	//     });
 
-	}
+	// }
 
 	return Google;
 }

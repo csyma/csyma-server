@@ -145,8 +145,15 @@ class auth extends csystem {
 	 *	4. delete users
 	 *	
 	 */
+	 /*
+	  * routes:
+	  *		/main
+	  *		/register 
+	  */
 	async main(req, res, next) {
-		res.send("/auth")
+		let self = this
+		let endpoints = await self.getRoutes(__dirname)
+		res.json(endpoints)
 	}
 
 

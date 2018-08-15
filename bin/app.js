@@ -71,7 +71,7 @@ app.get('/setup', function(req, res) {
 
 // basic route (http://localhost:8080)
 app.get('/', function(req, res) {
-	res.send('Hello! The API is at http://localhost:' + process.env.PORT + '/api');
+	res.json({Routes: ['/api']});
 });
 
 // ---------------------------------------------------------

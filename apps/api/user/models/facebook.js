@@ -21,15 +21,15 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	Facebook.associate = function (models) {
-	    Facebook.belongsTo(models.User, {
-	    	onDelete: "CASCADE",
-	      foreignKey: {
-	        allowNull: false
-			}
-	    });
+	// Facebook.associate = function (models) {
+	//     Facebook.belongsTo(models.User, {
+	//     	onDelete: "CASCADE",
+	//       foreignKey: {
+	//         allowNull: false
+	// 		}
+	//     });
 
-	}
+	// }
 
 	 return Facebook;
 }

@@ -4,7 +4,7 @@ const csystem = require(__dirname+"/../../csystem").csystem;
 const {sequelize} = require(__dirname+"/../../csystem").models
 const Familyfe = require(__dirname+'/../../../modules/node-familyfe')(sequelize)
 
-class users extends csystem
+class profile extends csystem
 {
 
 	constructor()
@@ -22,29 +22,30 @@ class users extends csystem
 		let self = this;
 		let [err, dontcare, care] = [];
 		self.makeMePrivate(req)	//make this *private
-		let person = req.body
-		;[err, care] = await to (Familyfe.Person.beget(person))
+		let profile = req.body
+		let uid = req.params.v1
+		profile.uid = uid
+		;[err, care] = await to (Familyfe.Profile.add(profile))
 		if(err)return Promise.reject(err)
-		// let {uid, Name, Email, IsActive} = care.dataValues || care
-		// res.json({uid:uid, Name: Name, Email: Email, Active: IsActive})
 		let ret = self.removeSomeFields(care);
 		res.json(ret)
 	}
 
 	async listUsers(req, res, next)
 	{
-		let self = this;
-		let [err, dontcare, care] = [];
-		self.makeMePrivate(req)	//make this *private
+		throw ({message: "Method not allowed.", status: 405})
+		// let self = this;
+		// let [err, dontcare, care] = [];
+		// self.makeMePrivate(req)	//make this *private
 
-		let uid = req.params.v1
-		console.log(req.params)
-		if(uid !== undefined) [err, care] = await to (Familyfe.Person.which({"uid":uid}))
-		else [err, care] = await to (Familyfe.World.parade())
-		if(err)return Promise.reject(err)
-		let ret = self.removeSomeFields(care);
-		res.json(ret)
-		// res.send(care)
+		// let uid = req.params.v1
+		// console.log(req.params)
+		// if(uid !== undefined) [err, care] = await to (Familyfe.Person.which({"uid":uid}))
+		// else [err, care] = await to (Familyfe.World.parade())
+		// if(err)return Promise.reject(err)
+		// let ret = self.removeSomeFields(care);
+		// res.json(ret)
+		// // res.send(care)
 	}
 
 	async patchUser(req, res, next)	//not implemented
@@ -52,14 +53,20 @@ class users extends csystem
 		throw ({message: "Method not allowed.", status: 405})
 	}
 
-	async putUser(req, res, next)
+	async putUserProfile(req, res, next)
 	{
 		let self = this;
 		let [err, dontcare, care] = [];
 		self.makeMePrivate(req)	//make this *private
-		;[err, care] = await to (self.common(req, res, "update", next))
+		let profile = req.body
+		let uid = req.params.v1
+		profile.uid = uid
+		;[err, care] = await to (Familyfe.Profile.updateEmail(profile))
 		if(err)return Promise.reject(err)
-		return true;
+			// console.log(err)
+		;[err, care] = await to(Familyfe.Person.which({"uid":uid}))
+		let ret = self.removeSomeFields(care);
+		res.json(ret)
 	}
 
 	async dropUser(req, res, next)
@@ -67,9 +74,14 @@ class users extends csystem
 		let self = this;
 		let [err, dontcare, care] = [];
 		self.makeMePrivate(req)	//make this *private
-		;[err, care] = await to (self.common(req, res, "destroy", next))
+		let profile = req.body
+		let uid = req.params.v1
+		profile.uid = uid
+		;[err, care] = await to (Familyfe.Profile.dropEmail(profile))
 		if(err)return Promise.reject(err)
-		return true;
+		;[err, care] = await to(Familyfe.Person.which({"uid":uid}))
+		let ret = self.removeSomeFields(care);
+		res.json(ret)
 	}
 
 	async common(req, res, action, next)
@@ -123,7 +135,7 @@ class users extends csystem
 				;[err, dontcare] = await to(self.patchUser(t_req, res, next));
 				break;
 			case "PUT":
-				;[err, dontcare] = await to(self.putUser(t_req, res, next));
+				;[err, dontcare] = await to(self.putUserProfile(t_req, res, next));
 				break;
 			case "DELETE":
 				;[err, dontcare] = await to(self.dropUser(t_req, res, next));
@@ -143,4 +155,4 @@ class users extends csystem
 
 }
 
-module.exports = users
+module.exports = profile

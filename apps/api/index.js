@@ -1,4 +1,5 @@
 'use strict'
+const fse = require('fs-extra');
 const csystem = require(__dirname+"/../csystem").csystem;
 
 class Api extends csystem
@@ -9,9 +10,11 @@ class Api extends csystem
 		super()
 	}
 
-	main(req, res)
+	async main(req, res)
 	{
-		res.send("You are in the api. Please see the documentation on how to use.")
+		let self = this
+		let endpoints = await self.getRoutes(__dirname)
+		res.json(endpoints)
 	}
 }
 

@@ -17,6 +17,7 @@ const sentenceCase = require('sentence-case');
 const Bcrypt = require('bcrypt');
 const to = require('await-to-js').to;
 const randomstring = require('randomstring');
+const async = require('async')
 // const {ObjectId} = require('mongodb');
 // const safeObjectId = s => ObjectId.isValid(s) ? new ObjectId(s) : null;
 
@@ -144,11 +145,165 @@ class abstractWorld
 	}
 }
 
+
+class abstractProfile extends abstractWorld
+{
+	constructor()
+	{
+		super();
+	}
+
+}
+
+
+class Profile extends abstractProfile
+{
+	constructor(sequelize) {
+		super()
+		let self = this;
+		self.sequelize = sequelize
+		self.socialLogins = [
+			{model: self.sequelize.models.Github},
+			{model: self.sequelize.models.Google},
+			{model: self.sequelize.models.Facebook}
+		]
+	}
+
+	async add(profile)
+	{
+		let self = this;
+		let [err, care, dontcare] = [];
+		let thisProfile = {...profile}
+		for(const inner in thisProfile){
+			let parts = inner.split(' ')
+			if(parts.length > 1){
+				let toupper = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+				thisProfile[parts[0]] === undefined? thisProfile[parts[0]] = {}:thisProfile[parts[0]][toupper] = thisProfile[inner];
+				thisProfile[parts[0]][toupper] = thisProfile[inner]
+
+			}
+		}
+
+		let profiles = {};
+		for(let key in thisProfile) {
+			if(typeof thisProfile[key] === 'object') {
+				thisProfile[key].UserUid = thisProfile['uid']
+				profiles[key] = thisProfile[key]
+			}
+		}
+
+		for(let key in profiles) {
+			;[err, care] = await to(self.sequelize.models[key.slice(0, -1)].create(profiles[key]))
+		}
+
+		if(err) {
+			let {a} = err.message || err.msg
+			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
+		}
+		return JSON.parse(JSON.stringify(care));
+	}
+
+	async updateEmail(profile)
+	{
+		let self = this;
+		let [err, care, dontcare] = [];
+		let thisProfile = {...profile}
+		for(const inner in thisProfile){
+			let parts = inner.split(' ')
+			if(parts.length > 1){
+				let toupper = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+				thisProfile[parts[0]] === undefined? thisProfile[parts[0]] = {}:thisProfile[parts[0]][toupper] = thisProfile[inner];
+				thisProfile[parts[0]][toupper] = thisProfile[inner]
+
+			}
+		}
+
+		let profiles = {};
+		for(let key in thisProfile) {
+			if(typeof thisProfile[key] === 'object') {
+				thisProfile[key].UserUid = thisProfile['uid']
+				profiles[key] = thisProfile[key]
+			}
+		}
+
+		let uid;
+		for(let key in profiles) {
+			let model = key.slice(0, -1)
+			uid = profiles[key].UserUid
+			;[err, care] = await to(self.sequelize.models[model].update(profiles[key], {where: {UserUid:profiles[key].UserUid, Email:profiles[key].Oldemail}}))
+			console.log(care)
+		}
+
+		// ;[err, care] = await to(self.sequelize.models.User.findOne({where: {uid:uid}} ))
+		if(err) {
+			let {a} = err.message || err.msg
+			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
+		}
+		return JSON.parse(JSON.stringify(care));
+	}
+
+	async dropEmail(profile)
+	{
+		let self = this;
+		let [err, care, dontcare] = [];
+		let thisProfile = {...profile}
+		for(const inner in thisProfile){
+			let parts = inner.split(' ')
+			if(parts.length > 1){
+				let toupper = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+				thisProfile[parts[0]] === undefined? thisProfile[parts[0]] = {}:thisProfile[parts[0]][toupper] = thisProfile[inner];
+				thisProfile[parts[0]][toupper] = thisProfile[inner]
+
+			}
+		}
+
+		let profiles = {};
+		for(let key in thisProfile) {
+			if(typeof thisProfile[key] === 'object') {
+				thisProfile[key].UserUid = thisProfile['uid']
+				profiles[key] = thisProfile[key]
+			}
+		}
+
+		let uid;
+		for(let key in profiles) {
+			let model = key.slice(0, -1)
+			uid = profiles[key].UserUid
+			;[err, care] = await to(self.sequelize.models[model].destroy({where: {UserUid:profiles[key].UserUid, Email:profiles[key].Oldemail}}))
+			console.log(care)
+		}
+
+		if(err) {
+			let {a} = err.message || err.msg
+			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
+		}
+		return JSON.parse(JSON.stringify(care));
+	}
+
+
+}
+
+
 class abstractPerson extends abstractWorld
 {
 	constructor()
 	{
 		super();
+	}
+
+	expandPerson(person){
+		let thisPerson = {...person}
+		for(const inner in person){
+			console.log(inner)
+			let parts = inner.split(' ')
+			if(parts.length > 1){
+				thisPerson[parts[0]] === undefined? thisPerson[parts[0]] = {}:thisPerson[parts[0]][parts[1].charAt(0).toUpperCase() + parts[1].slice(1)] = person[inner];
+				thisPerson[parts[0]][parts[1].charAt(0).toUpperCase() + parts[1].slice(1)] = person[inner]
+			
+
+			}
+		}
+		return thisPerson;
 	}
 }
 
@@ -246,7 +401,7 @@ class Person extends abstractPerson
 		let self = this;
 		let [err, care, dontcare] = [];
 		let githubOptions = {
-			model: self.sequelize.models.Github, as: 'Github'
+			model: self.sequelize.models.Github
 		}
 
 		if(options.github !== undefined) {
@@ -254,10 +409,14 @@ class Person extends abstractPerson
 			delete options.github 
 		}
 
-		let mainOptions = { attributes:self.attributes,
+		// let mainOptions = { attributes:self.attributes,
+		let mainOptions = { 
                 include: 
 			 	 		[
-			 	 			githubOptions
+			 	 			githubOptions,
+			 	 			{model:self.sequelize.models.Google},
+			 	 			{model:self.sequelize.models.Facebook},
+			 	 			{model:self.sequelize.models.Emailprofile}
 			 	 		]
         }
 
@@ -273,7 +432,11 @@ class Person extends abstractPerson
 				;[err, care] = await to(self.sequelize.models.User.findOne({where: options, attributes:self.attributes} ))
 				break;
 			case "update":
-				;[err, care] = await to(self.sequelize.models.User.update(options, {where: {uid:options.uid}}))
+				options = self.expandPerson(options)
+				// console.log(options)
+				;[err, care] = await to(self.sequelize.models.User.update(options, {where: {uid:options.uid}, fields:options}, mainOptions))
+				;[err, care] = await to(self.sequelize.models.Emailprofile.update(options.Emailprofiles, {where: {	UserUid:options.uid, Email: options.Emailprofiles.Oldemail}, fields:options}, mainOptions))
+				// ;[err, care] = await to(self.sequelize.models.User.findOne(mainOptions));
 				break;
 			case "destroy":
 				;[err, care] = await to(self.sequelize.models.User.destroy( {where: {uid:options.uid}}))
@@ -326,13 +489,32 @@ class Person extends abstractPerson
 	{
 		let self = this;
 		let [err, care, dontcare] = [];
-		;[err, care] = await to(self.sequelize.models.User.create(person))
+		// try{
+		let thisPerson = {...person}
+		for(const inner in person){
+			console.log(inner)
+			let parts = inner.split(' ')
+			if(parts.length > 1){
+				let toupper = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+				if(toupper === 'Uid') {
+					toupper = 'uid'
+				}
+				thisPerson[parts[0]] === undefined? thisPerson[parts[0]] = {}:thisPerson[parts[0]][toupper] = person[inner];
+				thisPerson[parts[0]][toupper] = person[inner]
+
+			}
+		}
+		
+		;[err, care] = await to(self.sequelize.models.User.create(thisPerson,{
+			include: [{
+		        model: self.sequelize.models.Emailprofile
+		    }]
+		}))
 
 		if(err) {
 			let {a} = err.message || err.msg
 			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
 		}
-
 		return JSON.parse(JSON.stringify(care));
 	}
 
@@ -351,8 +533,6 @@ class Person extends abstractPerson
 		}
 
 		// self.sequelize.models.User.Github = self.sequelize.models.Github.belongsTo(self.sequelize.models.User)
-
-		console.log("PASEEEEEEEEEEEEEEEEEEEEEF")
 		;[err, care] = await to(self.sequelize.models.User.create(firstPerson))
 
 		// console.log(person)
@@ -383,8 +563,6 @@ class Person extends abstractPerson
 
 		return JSON.parse(JSON.stringify(care));
 	}
-
-
 
 	identify(options, callback)
 	{
@@ -603,34 +781,70 @@ class World extends abstractWorld
 	async parade() {
 		let self = this;
 		let [err, care, dontcare] = [];
-		[err, care] = await to(self.sequelize.models.User.findAll({attributes: self.Person.attributes}))//or user .id
+		// [err, care] = await to(self.sequelize.models.User.findAll({attributes: self.Person.attributes}))//or user .id
+		[err, care] = await to(self.sequelize.models.User.findAll({
+			include: 
+ 	 		[
+ 	 			{model:self.sequelize.models.Github},
+ 	 			{model:self.sequelize.models.Google},
+ 	 			{model:self.sequelize.models.Facebook},
+ 	 			{model:self.sequelize.models.Emailprofile}
+ 	 		]
+		}))//or user .id
 		if(err)return Promise.reject({msg:err.msg||err, code:err.code||422, status:422})
 		care = care || {}
 		return JSON.parse(JSON.stringify(care))
 	}
 
 	async destroyWorld() {
-		let self = this;
-		self.sequelize.models.User.destroy({
-		  where: {},
-		  truncate: true
-		})
+		return true; // records have been deleted already
+		
+		// let self = this;
+		// // 
+		// let model, models;
+		// models = [];
+		// for(model in self.sequelize.models){
+		// 	models.push(model)
+		// }
+		// return new Promise((resolve, reject) => {
+		//   	async.each(models, function(model, callback) {
+		// 		console.log(`Model: ${model}`)
+		// 	    self.sequelize.models[model].destroy({
+		// 		  		where: {},
+		// 		 		truncate: false
+		// 			})
+		// 	    .then(function(){
+		// 			  callback();
+		// 		})
+		// 	    .catch((err)=>{
+		// 	    	// we can assume error for now
+		// 	    	// console.log(err)
+		// 	    	callback(err);
+		// 	    })			    
+		// 		}, function(err) {
+		// 	    //
+		// 	    if(err) return reject(err)
+		// 	    resolve(true)
+		// 	});
+		// });
 
-		return true;
 	}
-
 
 	async create(adam, callback)
 	{
 		let [err, care, dontcare] = [];
 		let self = this
-		self.destroyWorld().catch((err)=>console.log(err));
+		//self.destroyWorld().catch((err)=>console.log(err)).then(()=>console.log('finished'));
 		;[err, care] = await to(self.destroyWorld());
+		if(err)return Promise.reject({msg:err.mg||err.message||err, code:err.code||1000})
 		;[err, care] = await to(self.Person.beget(adam))
 		if(err)return Promise.reject({msg:err.mg||err.message||err, code:err.code||1000})
 		return care;
 	}
 }
+
+
+const appsConfig = require ('./apps.js')
 
 module.exports = (sequelize) => {
 	let module = {};
@@ -638,6 +852,8 @@ module.exports = (sequelize) => {
 	module.World =  new World(sequelize)
 	module.Person =  new Person(sequelize)
 	module.Family =  new Family(sequelize)
+	module.Profile =  new Profile(sequelize)
+	module.apps = new appsConfig(sequelize);
 		// World: new World(sequelize),
 		// Person: new Person(sequelize),
 		// Family: new Family(sequelize)

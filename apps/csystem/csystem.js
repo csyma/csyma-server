@@ -3,7 +3,8 @@
 const {sequelize} = require(__dirname+'/models')
 const to = require('await-to-js').to,
 	sentenceCase = require('sentence-case'),
-	passport = require('passport');
+	passport = require('passport'),
+	fse = require('fs-extra');
 
 class Csystem
 {
@@ -18,6 +19,7 @@ class Csystem
 		;[err, dontcare] = await to(sequelize.sync({force:force}))
 		if(err)
 		{
+			console.log(err)
 			return Promise.reject(new Error(err.name));
 		}
 		return true;
@@ -82,6 +84,25 @@ class Csystem
 		return __promisifiedPassportAuthentication().catch((err)=>{
 			throw(err)
 		})
+	}
+
+
+	async getRoutes(path){
+		return new Promise((resolve, reject)=>{
+			let endpoints = []
+			fse
+			.readdirSync(path+'/')
+			.filter((modelfile) =>
+				modelfile.indexOf('.') < 0
+			)
+			.forEach((file)=>{
+				endpoints.push('/'+file)
+			})
+				let ret = {
+					Routes:endpoints
+				}
+				resolve(ret)
+			})
 	}
 
 	// async _try(func, wait = true)

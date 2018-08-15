@@ -16,7 +16,7 @@ class errohandler extends csystem
 	static error500(req, res, err, next)
 	{
 		// res.status(err.status || 500).send({ error: process.env.ENV === "dev"?err.message ||err.msg || err || "Internal Server Error": err.message || "Internal Server Error", code:err.status || err.code ||  500 });
-		res.status(err.status || 500).json({ error: process.env.ENV === "dev"?err.message ||err.msg || err || "Internal Server Error": err.message || "Internal Server Error", code:err.status || err.code ||  500 });
+		res.status(err.status || 500).json({ error: process.env.ENV === "dev"?err.message ||err.msg || err || "Internal Server Error": err.message ||err.msg || "Internal Server Error", code:err.status || err.code ||  500 });
 		return next();
 
 	}

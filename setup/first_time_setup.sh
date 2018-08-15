@@ -184,7 +184,7 @@ YARN_VERSION=0.0.1
 
 main() {
 	echo "Hello there. Greetings from Mr. Brian"
-	echo "Mr. Brian will now install MYSQLDB_DBNAME for you and set up an admin user for you."
+	echo "Mr. Brian will now install the system for you and set up an admin user for you."
 	echo "This will be very interactive. So please stay around"
 
 	#check for right version of node, yarn, etc

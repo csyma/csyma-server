@@ -39,17 +39,20 @@ class firstTimeSetup extends csystem
 	async first_time_setup()
 	{
 		let self = this
-
-console.log('started')
 		let [err, dontcare, care] = [];
 
 		// //sync db
 		;[err, dontcare] = await to (self.dbSync(true))
-console.log('then')
-console.log(err)
 		if(err)return Promise.reject(err)
-		console.log("DB synced")
-console.log()		
+
+		console.log('Setting up Apps');
+		;[err, care] = await to(Familyfe.apps.setupallapps())
+
+		if(err){
+			console.log(err)
+			return Promise.reject(err)
+		}
+
 		let rootEmail = globalConfig.get('/rootEmail');
 		console.log(`rootEmail: ${rootEmail}`);
 		;[err, care] = await to(self.rootPassword())
@@ -57,31 +60,63 @@ console.log()
 		let rootPassword = care;
 		console.log(`password: ${rootPassword}`)
 
-		;[err, care] = await to (Familyfe.World.create({Name:"Brian Onang'o", Email:rootEmail.toLowerCase(), Password:rootPassword, Cpassword:rootPassword, IsActive:true}));
-		if(err)return Promise.reject(err)
+		;[err, care] = await to (Familyfe.World.create({
+			Name:"Brian Onang'o Admin", 
+			Gender: "Male",
+			Emailprofiles:{
+				Email:rootEmail.toLowerCase(), 
+				Password:rootPassword, 
+				Cpassword:rootPassword, 
+				IsActive:true,
+				},
+			IsActive:true
+		}));
+		if(err){
+			console.log(err)
+			return Promise.reject(err)
+		}
+
+		let uid = care.uid;
+		
+		// ;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(uid, 'csystem', ['nobody', 'root'])) // 0 is all apps
 
 		let guestEmail = globalConfig.get('/guestEmail');
-		;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
-		if(err)return Promise.reject(err)
-		console.log(care)
+		;[err, care] = await to (Familyfe.Person.beget({
+			Name:"Brian Onang'o Guest", 
+			Gender: "Male",
+			Emailprofiles:{
+				Email:guestEmail.toLowerCase(), 
+				Password:rootPassword, 
+				Cpassword:rootPassword, 
+				IsActive:true,
+				},
+			IsActive:true
+		}))
 		
-		//errors
-		// ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
-		// console.log(err)
-		// if(err)return Promise.reject(err)
-		// ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:"DUS", Cpassword:guestEmail, IsActive:true}))
-		// console.log(err)
-		// if(err)return Promise.reject(err)
-		// ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Cpassword:guestEmail, IsActive:true}))
-		// console.log(err)
-		// if(err)return Promise.reject(err)
+		if(err){
+			console.log(err)
+			return Promise.reject(err)
+		}
+		// console.log(care)
+		let guid = care.uid;
+		;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(guid, 0, ['nobody'])) // 0 is all apps
+		;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(uid, 0, ['nobody', 'user', 'root'])) // 0 is all apps
+		
+		// //errors
+		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
+		// // console.log(err)
+		// // if(err)return Promise.reject(err)
+		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:"DUS", Cpassword:guestEmail, IsActive:true}))
+		// // console.log(err)
+		// // if(err)return Promise.reject(err)
+		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Cpassword:guestEmail, IsActive:true}))
+		// // console.log(err)
+		// // if(err)return Promise.reject(err)
 		return true
 	}
 
 	async rootPassword ()
-	{
-
-		
+	{	
 		let password, dontcare, err;
 		if(process.env.ENV === "development" || process.env.ENV === "dev")
         {
