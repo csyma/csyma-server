@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 			autoIncrement: true
 		},
 		AppName: {
-			type: DataTypes.STRING, 
+			type: DataTypes.STRING(32), 
 			allowNull: false,
 			unique: true,
             validate: {

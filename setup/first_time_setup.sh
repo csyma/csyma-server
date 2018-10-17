@@ -44,6 +44,7 @@ replaceFolders?() {
 
 replaceConfig?() {
 	echo "copying system files"
+		mkdir -p ../config
 		echo -n "config"
 			cp config/config.system.js.example ../config/config.system.js
 		echo "..done"
@@ -60,13 +61,13 @@ replaceDatabases?() {
 	#does not work for remote addresses
 	[[ $WHICHDATABASE = 'mysql' ]] && {
 		[[ $ENV = 'dev' ]] && { 
-			mysql -h "$MYSQLDB_HOST_DEV" -u$MYSQLDB_USER_DEV -p"$MYSQLDB_PASS_DEV" -e "DROP DATABASE $MYSQLDB_DBNAME_DEV; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME_DEV"
-			mysql -h "$MYSQLDB_HOST_DEV" -u$MYSQLDB_USER_DEV -p"$MYSQLDB_PASS_DEV" -e "CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME_DEV"
+			mysql -h "$MYSQLDB_HOST_DEV" -u $MYSQLDB_USER_DEV -p"$MYSQLDB_PASS_DEV" -e "DROP DATABASE $MYSQLDB_DBNAME_DEV; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME_DEV"
+			mysql -h "$MYSQLDB_HOST_DEV" -u $MYSQLDB_USER_DEV -p"$MYSQLDB_PASS_DEV" -e "CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME_DEV"
 			tput setaf 2;  echo "Mr. Brian has created $MYSQLDB_DBNAME_DEV for you"; tput sgr0 
 
 		} || { 
-			mysql -h "$MYSQLDB_HOST" -u$MYSQLDB_USER -p"$MYSQLDB_PASS" -e "DROP DATABASE $MYSQLDB_DBNAME; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
-			mysql -h "$MYSQLDB_HOST" -u$MYSQLDB_USER -p"$MYSQLDB_PASS" -e "CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
+			mysql -h "$MYSQLDB_HOST" -u $MYSQLDB_USER -p"$MYSQLDB_PASS" -e "DROP DATABASE $MYSQLDB_DBNAME; CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
+			mysql -h "$MYSQLDB_HOST" -u $MYSQLDB_USER -p"$MYSQLDB_PASS" -e "CREATE DATABASE IF NOT EXISTS $MYSQLDB_DBNAME"
  			tput setaf 2;  echo "Mr. Brian has created $MYSQLDB_DBNAME for you"; tput sgr0 
 		}
 	}

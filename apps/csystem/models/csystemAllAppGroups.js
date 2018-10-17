@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 			autoIncrement: true
 		},
 		Group: {
-			type: DataTypes.STRING, 
+			type: DataTypes.STRING(32), 
 			allowNull: false,
 			unique:true,
             validate: {
