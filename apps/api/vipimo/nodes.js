@@ -39,10 +39,15 @@ class nodetype extends csystem {
 		if(_NodeTypeNodeTypeId) insert.NodeTypeNodeTypeId = _NodeTypeNodeTypeId
 
 		let [err, care] = await to(sequelize.models.Node.create(insert))
+
+		try {
 		
 		if (err) 
 			if(err.errors[0].message !== 'NodeAddr must be unique')
 				throw(err)
+		} catch(error) {
+			throw err
+		}
 
 
 		;[err, care] = await to(sequelize.models.Node.findOne({

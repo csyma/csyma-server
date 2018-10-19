@@ -8,7 +8,9 @@ Node = require(__dirname+"/nodes"),
 Nodetypes = require(__dirname+"/nodetypes"),
 NodeSources = require(__dirname+"/nodesources"),
 NodeTechnologies = require(__dirname+"/nodetechnologies"),
-Nodeencoding = require(__dirname+"/nodeencodings")
+Nodeencoding = require(__dirname+"/nodeencodings"),
+UnregisteredNode = require(__dirname+"/unregisterednode"),
+NodeData = require(__dirname+"/nodedatas")
 
 class vipimo extends csystem {
 
@@ -212,6 +214,14 @@ class vipimo extends csystem {
 
 	async nodeencoding(req, res, next) {
 		await Nodeencoding.main(req, res)
+	}
+
+	async unregisterednode(req, res, next) {
+		await UnregisteredNode.main(req, res)
+	}
+
+	async nodedata(req, res, next) {
+		await NodeData.main(req, res)
 	}
 
 
