@@ -1,14 +1,14 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-	const Analog2 = sequelize.define('Analog2', {
-		Analog2Id: {
+	const DigitalState2 = sequelize.define('DigitalState2', {
+		DigitalState2Id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		},
 		Data: {
-			type: DataTypes.FLOAT,
+			type: DataTypes.BOOLEAN,
 			allowNull: false, 
 			defaultValue: 0
 		}
@@ -21,8 +21,8 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	Analog2.associate = function (models) {
-	    Analog2.hasOne(models.NodeData, {
+	DigitalState2.associate = function (models) {
+	    DigitalState2.hasOne(models.NodeData, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -35,5 +35,5 @@ module.exports = (sequelize, DataTypes) => {
 
 
 
-	 return Analog2;
+	 return DigitalState2;
 }

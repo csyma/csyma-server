@@ -139,8 +139,168 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: true
 			}
 	    });
+		
+			NodeData.belongsTo(models.DigitalState1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.DigitalState2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.DigitalState3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.DigitalState4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+			});
+			
+	  NodeData.belongsTo(models.Water1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Water2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Water3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Water4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
 
 	    NodeData.belongsTo(models.Battery, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+	    NodeData.belongsTo(models.Rainfall1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Rainfall2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Rainfall3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Rainfall4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+	    NodeData.belongsTo(models.WindDirection1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindDirection2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindDirection3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindDirection4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+	    NodeData.belongsTo(models.WindSpeed1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindSpeed2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindSpeed3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.WindSpeed4, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {

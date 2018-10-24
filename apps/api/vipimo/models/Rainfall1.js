@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-	const Analog2 = sequelize.define('Analog2', {
-		Analog2Id: {
+	const Rainfall1 = sequelize.define('Rainfall1', {
+		Rainfall1Id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
@@ -20,9 +20,8 @@ module.exports = (sequelize, DataTypes) => {
 
 	})
 
-
-	Analog2.associate = function (models) {
-	    Analog2.hasOne(models.NodeData, {
+	Rainfall1.associate = function (models) {
+	    Rainfall1.hasOne(models.NodeData, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -31,9 +30,5 @@ module.exports = (sequelize, DataTypes) => {
 	    });	
 	}
 
-
-
-
-
-	 return Analog2;
+	return Rainfall1;
 }
