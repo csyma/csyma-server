@@ -1,12 +1,12 @@
 [Unit]
-Description=familyfe-challenge
+Description=familyfe-vipimo-server
 
 [Service]
 User=root
 Group=root
-WorkingDirectory=/var/www/html/familyfe-challenge
-ExecStart=/var/www/html/familyfe-challenge/start.sh
-SyslogIdentifier=familyfe-challenge
+WorkingDirectory=/root/familyfe-vipimo-server
+ExecStart=/root/familyfe-vipimo-server/start.sh
+SyslogIdentifier=familyfe-vipimo-server
 Restart=on-failure
 RestartSec=5
 
