@@ -682,7 +682,7 @@ class nodeData extends csystem {
 			{model: sequelize.models.WindSpeed2},
 			{model: sequelize.models.WindSpeed3},
 			{model: sequelize.models.WindSpeed4},
-			{model: sequelize.models.Gateway},
+			{model: sequelize.models.Gateway, attributes: ["MAC"]},
 			{model: sequelize.models.Node, attributes: ["NodeAddr"]},
 
 			{model: sequelize.models.Pressure1},
@@ -771,7 +771,6 @@ class nodeData extends csystem {
 		care = JSON.parse(JSON.stringify(care, (k,v) => (k === 'GatewayTypeGatewayTypeId')? undefined : v))
 		care = JSON.parse(JSON.stringify(care, (k,v) => (k === 'GatewayId')? undefined : v))
 
-		
 		// Object.keys(care).forEach((key) => (care[key] == null) && delete care[key]);
 
 
