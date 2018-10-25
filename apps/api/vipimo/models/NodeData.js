@@ -308,6 +308,70 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 
+	    NodeData.belongsTo(models.Pressure1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Pressure2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Pressure3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Pressure4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+	    NodeData.belongsTo(models.Humidity1, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Humidity2, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Humidity3, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
+		NodeData.belongsTo(models.Humidity4, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: true
+			}
+	    });
+
 	    
 
 	    NodeData.belongsTo(models.NodeSignal, {
