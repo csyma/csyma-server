@@ -683,10 +683,14 @@ class nodeData extends csystem {
 			{model: sequelize.models.Gateway},
 			{model: sequelize.models.Node, attributes: ["NodeAddr"]},
 
-			// {model: sequelize.models.Pressure1},
-			// {model: sequelize.models.Pressure2},
-			// {model: sequelize.models.Pressure3},
-			// {model: sequelize.models.Pressure4}
+			{model: sequelize.models.Pressure1},
+			{model: sequelize.models.Pressure2},
+			{model: sequelize.models.Pressure3},
+			{model: sequelize.models.Pressure4},
+			{model: sequelize.models.Humidity1},
+			{model: sequelize.models.Humidity2},
+			{model: sequelize.models.Humidity3},
+			{model: sequelize.models.Humidity4}
 		]
 
 		options['include'] = include
