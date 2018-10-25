@@ -646,6 +646,8 @@ class nodeData extends csystem {
 		if(limit)
 			options['limit'] = limit
 
+		options['order'] = [['DataTime', 'DESC']]
+
 		if(nodeId)
 			select['NodeNodeId'] = nodeId
 
