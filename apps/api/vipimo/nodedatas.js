@@ -116,7 +116,7 @@ class nodeData extends csystem {
 		}
 		let [err, care] = await to(sequelize.models.Battery.create(insert))
 		if(err) throw err;
-		return care.dataValues.Battery4Id;
+		return care.dataValues.BatteryId;
 	}
 
 	async insertintoHumidity1(data) {
@@ -564,12 +564,7 @@ class nodeData extends csystem {
 				   if(care) insert.DigitalState4DigitalState4Id = care
 				   break;
 				case 'B':
-					console.log("inserted into battery.....")
-					console.log("inserted into battery.....")
-					console.log(body.B)
-					console.log("inserted into battery.....")
-					console.log("inserted into battery.....")
-					[err, care] = await to(self.insertintoBattery(body.B))
+					;[err, care] = await to(self.insertintoBattery(body.B))
 					if(care) insert.BatteryBatteryId = care
 					break;
 
