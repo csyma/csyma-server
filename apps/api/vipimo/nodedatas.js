@@ -682,6 +682,10 @@ class nodeData extends csystem {
 			{model: sequelize.models.WindSpeed2},
 			{model: sequelize.models.WindSpeed3},
 			{model: sequelize.models.WindSpeed4},
+			{model: sequelize.models.Rainfall1},
+			{model: sequelize.models.Rainfall2},
+			{model: sequelize.models.Rainfall3},
+			{model: sequelize.models.Rainfall4},
 			{model: sequelize.models.Gateway, attributes: ["MAC"]},
 			{model: sequelize.models.Node, attributes: ["NodeAddr"]},
 
