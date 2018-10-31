@@ -564,7 +564,12 @@ class nodeData extends csystem {
 				   if(care) insert.DigitalState4DigitalState4Id = care
 				   break;
 				case 'B':
-					 [err, care] = await to(self.insertintoBattery(body.B))
+					console.log("inserted into battery.....")
+					console.log("inserted into battery.....")
+					console.log(body.B)
+					console.log("inserted into battery.....")
+					console.log("inserted into battery.....")
+					[err, care] = await to(self.insertintoBattery(body.B))
 					if(care) insert.BatteryBatteryId = care
 					break;
 
@@ -782,7 +787,7 @@ class nodeData extends csystem {
 		let self = this;
 		let method = req.method;
 		// res.send('starting working on nodes...')
-		console.log('starting nodeData work')
+		// console.log('starting nodeData work')
 
 		switch(method) {
 			case 'POST':
