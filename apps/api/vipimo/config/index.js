@@ -11,7 +11,7 @@ const criteria = {
 
 
 const config = {
-    name:"csystem",
+    name:"vipimo",
     displayname:false,      // || or false if it should not be shown in app list
 	// url:"csystem/app/elements",
 	enabled: {    // require this from db
@@ -20,7 +20,7 @@ const config = {
         nobody:"free"
     },
     Enabled: true,
-    groups: [
+    groups: [               // or role
         "nobody",
         "user",
         "root"
@@ -28,7 +28,7 @@ const config = {
     AutoInstall: true,
     "canuninstall":
     {
-        root:false,
+        root:true,
         user:false,
         nobody:false
     },

@@ -1,24 +1,30 @@
 'use strict'
-
-// All apps have all groups...
-
 module.exports = (sequelize, DataTypes) => {
-	const AllAppGroup = sequelize.define('AllAppGroup', {
-		GroupId: {
+	const Role = sequelize.define('Role', {
+		RoleId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		Group: {
+		UniqueRole: {
 			type: DataTypes.STRING(32), 
 			allowNull: false,
-			unique:true,
+			unique:true
+		},
+		Role: {
+			type: DataTypes.STRING(32), 
+			allowNull: false,
             validate: {
             	 len: {
                     args: [3, 32],
-                    msg: 'Please give us a group app name'
+                    msg: 'Please give us a valid role'
                 }
             }
+		},
+		canUninstall: {
+			type:DataTypes.BOOLEAN,
+			allowNull: false, 
+			defaultValue: false
 		}
 	},
 	{
@@ -28,9 +34,8 @@ module.exports = (sequelize, DataTypes) => {
 
 	})
 
-
-	AllAppGroup.associate = function (models) {
-	    AllAppGroup.hasMany(models.AppGroup, {
+	Role.associate = function (models) {
+	    Role.hasMany(models.MemberRole, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -39,7 +44,5 @@ module.exports = (sequelize, DataTypes) => {
 	    });
 	}
 
-
-
-	 return AllAppGroup;
+	 return Role;
 }

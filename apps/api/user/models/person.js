@@ -2,26 +2,26 @@
 // const Promise = require('bluebird')
 // const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
 
-// async function hashPassword(user, options){
+// async function hashPassword(Person, options){
 // 	const SALT_FACTOR = 10
-// 	if(!user.changed('Password')){
+// 	if(!Person.changed('Password')){
 // 		return
 // 	}
 
-// 	if(!user.Cpassword)
+// 	if(!Person.Cpassword)
 // 		return Promise.reject({code:1002, msg:"Please confirm your password"});
-// 	if(user.Cpassword)
-// 		if(user.Password !== user.Cpassword)
+// 	if(Person.Cpassword)
+// 		if(Person.Password !== Person.Cpassword)
 // 			return Promise.reject({code:1002, msg:"Passwords don't match"});
 // 	return bcrypt.genSaltAsync(SALT_FACTOR)
-// 		.then((salt)=>bcrypt.hashAsync(user.dataValues.Password,salt, null))
+// 		.then((salt)=>bcrypt.hashAsync(Person.dataValues.Password,salt, null))
 // 		.then(hash=>{
-// 			user.setDataValue('Password', hash)
+// 			Person.setDataValue('Password', hash)
 // 		})
 // }
 
 module.exports = (sequelize, DataTypes) => {
-	const User = sequelize.define('User', {
+	const Person = sequelize.define('Person', {
 		uid: {
 			type: DataTypes.UUID,
 			defaultValue: DataTypes.UUIDV1,
@@ -58,8 +58,8 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	User.associate = function (models) {
-	    User.hasMany(models.Github, {
+	Person.associate = function (models) {
+	    Person.hasMany(models.Github, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 	    
-	    User.hasMany(models.Facebook, {
+	    Person.hasMany(models.Facebook, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -75,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 
-	    User.hasMany(models.Google, {
+	    Person.hasMany(models.Google, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -83,7 +83,7 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 
-		User.hasMany(models.Emailprofile, {
+		Person.hasMany(models.Emailprofile, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -91,15 +91,15 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 
-	    User.hasMany(models.AppUser, {
-	    	onDelete: "CASCADE",
-	    	onUpdate: "CASCADE",
-			foreignKey: {
-				allowNull: false
-			}
-	    }); 
+	  //   Person.hasMany(models.AppPerson, {
+	  //   	onDelete: "CASCADE",
+	  //   	onUpdate: "CASCADE",
+			// foreignKey: {
+			// 	allowNull: false
+			// }
+	  //   }); 
 
-	    User.hasMany(models.FamilieMember, {
+	    Person.hasMany(models.FamilyMember, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -110,10 +110,5 @@ module.exports = (sequelize, DataTypes) => {
 	}
 
 
-	// User.prototype.comparePass = async function(password){
-	// 	return bcrypt.compareAsync(password, this.Password)
-	// }
-
-
-	 return User;
+	 return Person;
 }

@@ -1,18 +1,11 @@
 'use strict'
-
 module.exports = (sequelize, DataTypes) => {
-	const NodeSource = sequelize.define('NodeSource', {
-		NodeSourceId: {
+	const InstalledApp = sequelize.define('InstalledApp', {
+		InstalledAppId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
-		},
-		Source: {
-			type: DataTypes.STRING(16),
-			allowNull: false,
-			unique:true
 		}
-
 	},
 	{
 		hooks: {
@@ -22,17 +15,18 @@ module.exports = (sequelize, DataTypes) => {
 	})
 
 
-	NodeSource.associate = function (models) {
-	    NodeSource.hasMany(models.Node, {
+
+	InstalledApp.associate = function (models) {
+	    InstalledApp.belongsTo(models.App, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
 				allowNull: false
 			}
 	    });
+
 	}
 
 
-
-	 return NodeSource;
+	 return InstalledApp;
 }

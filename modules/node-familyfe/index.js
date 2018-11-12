@@ -234,7 +234,7 @@ class Profile extends abstractProfile
 			console.log(care)
 		}
 
-		// ;[err, care] = await to(self.sequelize.models.User.findOne({where: {uid:uid}} ))
+		// ;[err, care] = await to(self.sequelize.models.Person.findOne({where: {uid:uid}} ))
 		if(err) {
 			let {a} = err.message || err.msg
 			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
@@ -320,6 +320,7 @@ class Person extends abstractPerson
 			{model: self.sequelize.models.Google},
 			{model: self.sequelize.models.Facebook}
 		]
+		self.Family = new Family(sequelize)
 
 		// console.log(self.sequelize.models)
 
@@ -425,21 +426,21 @@ class Person extends abstractPerson
 		switch(action)
 		{
 			case "which":
-				;[err, care] = await to(self.sequelize.models.User.findOne(mainOptions ))
+				;[err, care] = await to(self.sequelize.models.Person.findOne(mainOptions ))
 				break;
 			case "whichwithPwd":
 				self.attributes.push('Password')
-				;[err, care] = await to(self.sequelize.models.User.findOne({where: options, attributes:self.attributes} ))
+				;[err, care] = await to(self.sequelize.models.Person.findOne({where: options, attributes:self.attributes} ))
 				break;
 			case "update":
 				options = self.expandPerson(options)
 				// console.log(options)
-				;[err, care] = await to(self.sequelize.models.User.update(options, {where: {uid:options.uid}, fields:options}, mainOptions))
+				;[err, care] = await to(self.sequelize.models.Person.update(options, {where: {uid:options.uid}, fields:options}, mainOptions))
 				;[err, care] = await to(self.sequelize.models.Emailprofile.update(options.Emailprofiles, {where: {	UserUid:options.uid, Email: options.Emailprofiles.Oldemail}, fields:options}, mainOptions))
-				// ;[err, care] = await to(self.sequelize.models.User.findOne(mainOptions));
+				// ;[err, care] = await to(self.sequelize.models.Person.findOne(mainOptions));
 				break;
 			case "destroy":
-				;[err, care] = await to(self.sequelize.models.User.destroy( {where: {uid:options.uid}}))
+				;[err, care] = await to(self.sequelize.models.Person.destroy( {where: {uid:options.uid}}))
 				break;
 				
 		}
@@ -505,7 +506,7 @@ class Person extends abstractPerson
 			}
 		}
 		
-		;[err, care] = await to(self.sequelize.models.User.create(thisPerson,{
+		;[err, care] = await to(self.sequelize.models.Person.create(thisPerson,{
 			include: [{
 		        model: self.sequelize.models.Emailprofile
 		    }]
@@ -515,6 +516,17 @@ class Person extends abstractPerson
 			let {a} = err.message || err.msg
 			return Promise.reject({msg:err.msg||err.errors[0].message||err.message||err, code:err.code||422, status:422})
 		}
+		let uid = care.dataValues.uid
+		// console.log(uid)
+		// add to world
+		let [err1, care1] = await to(self.Family.addMember(1, uid))
+		// console.log(care1)
+		// console.log(err)
+
+		let Families = person.Families || [];
+		let promises = Families.map(function(family){ return self.Family.addMember(family, uid)})
+		;[err1, care1] = await to(Promise.all(promises));
+		// console.log(care1)
 		return JSON.parse(JSON.stringify(care));
 	}
 
@@ -532,8 +544,8 @@ class Person extends abstractPerson
 			Cpassword: password,
 		}
 
-		// self.sequelize.models.User.Github = self.sequelize.models.Github.belongsTo(self.sequelize.models.User)
-		;[err, care] = await to(self.sequelize.models.User.create(firstPerson))
+		// self.sequelize.models.Person.Github = self.sequelize.models.Github.belongsTo(self.sequelize.models.Person)
+		;[err, care] = await to(self.sequelize.models.Person.create(firstPerson))
 
 		// console.log(person)
 		// console.log("Now going to create user....")
@@ -652,67 +664,257 @@ class Family extends abstractFamily
 		super();
 		let self = this;
 		self.sequelize = sequelize
+		
 	}
 
-	create(options, callback)		
-	{
-		let self = this;
-		let errors = {};
-		let members = options.Members 			//don't change the keys
-		options = self.Familyfe.extend(self.DefaultAttributes, options)
-		options.Members = members
-		self.Familyfe.MongoModels.collection = self.Familyfe.collection
-		self.Familyfe.MongoModels.find({_id:options._id}, function(err, results){
-			let len = Objlen(results)
-			if(err || len < 1)
+
+	async create(options) {
+		let self = this
+		let FamilyName = options.FamilyName || ''
+		let hierarchyLevel = options.hierarchyLevel
+		let parentFamilyId = options.parentFamilyId
+
+		if (FamilyName === 'World' || FamilyName === 'Csystem') {
+			hierarchyLevel = 1;
+			parentFamilyId = null;
+		} else {
+			if (hierarchyLevel < 2) hierarchyLevel = 2
+			if (parentFamilyId === null) parentFamilyId = 1
+		}
+	    // console.log('going to create..')
+	    let [err, care] = await to(self.sequelize.models.Family.create({
+	    	FamilyName,
+	    	hierarchyLevel,
+	    	parentFamilyId
+	    }))
+	    if (err) throw err;
+	    if (care===null) throw 'Missing familyId'
+	    return care.dataValues.FamilyId;
+	}
+
+	async getApps(family) {
+		let self = this
+		let [err, care] = [];
+		console.log('-===========================================')
+		;[err, care] = await to(self.sequelize.models.InstalledApp.findAll(
 			{
-				if(options.New === true)
-				{
-					delete options._id;
-					delete options.New
-				}
-				self.Attributes = JSON.parse(JSON.stringify(options))
-				delete options.Members;				
-				let doc = options
-				self.Familyfe.MongoModels.collection = self.Familyfe.collection
-				self.Familyfe.MongoModels.insertOne(doc, function(err, results){
-					if(err)
-					{
-						errors["family"] = "Unable to create new family. Please try again";
-						return callback(errors)
-					}
-					delete self.Attributes.Roles
-					self.Attributes = self.familyfe.extend(self.Attributes,options)
-					self.addMembers(function(err,results){return callback(null, self.Attributes)})
-					
-				});
-					
-			}
-			else return callback(null, options)
-			
-		})
+				where:{
+					FamilyFamilyId:family
+				},
+				attributes: ["InstalledAppId"],
+				include: 
+					[
+						{model:self.sequelize.models.App,
+							attributes: ['AppId', 'AppName'],
+							include:[{model:self.sequelize.models.Role,
+								attributes: ['RoleId', 'Role']
+							}]
+						}
+					]
+			}, 
+		))
+		let ret = [];
+		// console.log(err)
+		if(err) throw (err)
+		if(care === null) throw "nothing found"
+		// console.log(err)
+		// console.log(JSON.stringify(care))
+		for(let i in care)
+			ret.push(care[i].dataValues)
+		return JSON.parse(JSON.stringify(ret))
 	}
 
-	addMembers(callback)
+	async getspecificMemberRoleforFamily(family, specificRole) {
+		let self = this
+		let [err, care] = [];
+		console.log('-===========================================')
+		;[err, care] = await to(self.sequelize.models.InstalledApp.findAll(
+			{
+				where:{
+					FamilyFamilyId:family
+				},
+				attributes: ["InstalledAppId"],
+				include: 
+					[
+						{model:self.sequelize.models.App,
+							attributes: ['AppId', 'AppName'],
+							include:[{model:self.sequelize.models.Role,
+								attributes: ['RoleId', 'Role'],
+								where:{Role:specificRole}
+							}]
+						}
+					]
+			}, 
+		))
+		let ret = [];
+		// console.log(err)
+		if(err) throw (err)
+		if(care === null) throw "nothing found"
+		// console.log(err)
+		// console.log(JSON.stringify(care))
+		for(let i in care)
+			ret.push(care[i].dataValues)
+		return JSON.parse(JSON.stringify(ret))
+	}
+
+	// async create(options, callback)		
+	// {
+	// 	let self = this;
+	// 	let errors = {};
+	// 	let members = options.Members 			//don't change the keys
+	// 	options = self.Familyfe.extend(self.DefaultAttributes, options)
+	// 	options.Members = members
+	// 	self.Familyfe.MongoModels.collection = self.Familyfe.collection
+	// 	self.Familyfe.MongoModels.find({_id:options._id}, function(err, results){
+	// 		let len = Objlen(results)
+	// 		if(err || len < 1)
+	// 		{
+	// 			if(options.New === true)
+	// 			{
+	// 				delete options._id;
+	// 				delete options.New
+	// 			}
+	// 			self.Attributes = JSON.parse(JSON.stringify(options))
+	// 			delete options.Members;				
+	// 			let doc = options
+	// 			self.Familyfe.MongoModels.collection = self.Familyfe.collection
+	// 			self.Familyfe.MongoModels.insertOne(doc, function(err, results){
+	// 				if(err)
+	// 				{
+	// 					errors["family"] = "Unable to create new family. Please try again";
+	// 					return callback(errors)
+	// 				}
+	// 				delete self.Attributes.Roles
+	// 				self.Attributes = self.familyfe.extend(self.Attributes,options)
+	// 				self.addMembers(function(err,results){return callback(null, self.Attributes)})
+					
+	// 			});
+					
+	// 		}
+	// 		else return callback(null, options)
+			
+	// 	})
+	// }
+
+	// addMembers(callback)
+	// {
+	// 	let self = this
+	// 	let familyId = self.Attributes._id;
+	// 	let members = self.Attributes.Members
+	// 	Async.each(Object.keys(members), function (memberId, next){ 
+	// 		let docs = {familyId:familyId,memberId:safeObjectId(memberId), Roles:members[memberId]}
+	// 		self.Familyfe.MongoModels.collection = "FamilyMembers"
+	// 		self.Familyfe.MongoModels.find({familyId:familyId,memberId:memberId}, function(err, results){
+	// 			docs.Roles = self.extendFamilyRoles(docs.Roles, results.Roles || {})
+	// 			self.Familyfe.MongoModels.collection = "FamilyMembers"
+	// 			self.Familyfe.MongoModels.deleteOne({familyId:familyId,memberId:memberId}, function(err, results){
+	// 				self.Familyfe.MongoModels.collection = "FamilyMembers"
+	// 				self.Familyfe.MongoModels.insertOne(docs, next);
+	// 			});
+	// 		})
+	// 	}, function(err) {
+     	
+	// 		callback()
+	// 	})
+	// }
+
+	async addMember(family, member) {
+		let self = this
+		let [err, care] = []
+		
+		;[err, care] = await to(self.sequelize.models.FamilyMember.findOne({where:
+			{
+				"PersonUid": member,
+				"FamilyFamilyId": family
+			}
+		}))
+
+		if(err) throw (err);
+		if(care === null)
+		{
+			[err, care] = await to(self.sequelize.models.FamilyMember.create(
+			{
+				"PersonUid": member,
+				"FamilyFamilyId": family
+			}
+			));
+			if(err) throw (err)
+		}
+		return care;
+	}
+
+	async getMembers(family) {
+		let self = this
+		let [err, care] = []
+		
+		;[err, care] = await to(self.sequelize.models.FamilyMember.findAll({where:
+			{
+				"FamilyFamilyId": family
+			},
+			attributes:['FamilyMemberId', 'PersonUid']
+		}))
+
+		if(err) throw (err);
+		if(care === null) throw err ("nothing found")
+		
+		let ret = [];
+		for(let i in care) {
+			ret.push(care[i].dataValues)
+		}
+		
+		return JSON.parse(JSON.stringify(ret));
+	}
+
+	async getMember(family, Person) {
+		let self = this
+		let [err, care] = []
+		
+		;[err, care] = await to(self.sequelize.models.FamilyMember.findOne({where:
+			{
+				"FamilyFamilyId": family,
+				"PersonUid": Person
+			},
+			attributes:['FamilyMemberId']
+		}))
+
+
+
+		if(err) throw (err);
+		if(care === null) throw err ("nothing found")
+		
+		return care.dataValues.FamilyMemberId
+	}
+	async createRoleforMember(member, role) {
+		let self = this;
+		let [err, care] = await to(self.sequelize.models.MemberRole.create({
+			"FamilyMemberFamilyMemberId":member,
+			"RoleRoleId":role
+		}))
+		
+		if(err) throw (err)
+		return care.dataValues
+	}
+	async createRolesforMember(member, roles) {
+		let self = this;
+		// try{
+		let promises = roles.map( function(role){ return self.createRoleforMember(member, role)})
+		let [err, care] = await to(Promise.all(promises));
+		if(err) throw (err)
+		return care;
+		// }catch(error) {
+		// 	console.log(error)
+		// }
+	}
+
+
+	async addMembers(family, members)
 	{
 		let self = this
-		let familyId = self.Attributes._id;
-		let members = self.Attributes.Members
-		Async.each(Object.keys(members), function (memberId, next){ 
-			let docs = {familyId:familyId,memberId:safeObjectId(memberId), Roles:members[memberId]}
-			self.Familyfe.MongoModels.collection = "FamilyMembers"
-			self.Familyfe.MongoModels.find({familyId:familyId,memberId:memberId}, function(err, results){
-				docs.Roles = self.extendFamilyRoles(docs.Roles, results.Roles || {})
-				self.Familyfe.MongoModels.collection = "FamilyMembers"
-				self.Familyfe.MongoModels.deleteOne({familyId:familyId,memberId:memberId}, function(err, results){
-					self.Familyfe.MongoModels.collection = "FamilyMembers"
-					self.Familyfe.MongoModels.insertOne(docs, next);
-				});
-			})
-		}, function(err) {
-     	
-			callback()
-		})
+		let [err, care] = [];
+
+		let promises = members.map( function(member) { return self.addMember(member, family); })
+		;[err, care] = await to(Promise.all(promises));
+		return care;
 	}
 
 	getMemberId(user, callback)
@@ -781,8 +983,8 @@ class World extends abstractWorld
 	async parade() {
 		let self = this;
 		let [err, care, dontcare] = [];
-		// [err, care] = await to(self.sequelize.models.User.findAll({attributes: self.Person.attributes}))//or user .id
-		[err, care] = await to(self.sequelize.models.User.findAll({
+		// [err, care] = await to(self.sequelize.models.Person.findAll({attributes: self.Person.attributes}))//or user .id
+		[err, care] = await to(self.sequelize.models.Person.findAll({
 			include: 
  	 		[
  	 			{model:self.sequelize.models.Github},

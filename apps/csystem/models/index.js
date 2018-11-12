@@ -1,7 +1,7 @@
 'use strict'
 const fse = require('fs-extra');
 const path = require('path')
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize-hierarchy')();
 
 const globalConfig = require(__dirname+'/../../../config/config.system');
 
@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
 		dialect: globalConfig.get('/databaseType'),
 		host: globalConfig.get(`/database/${whichDB}/HOST`),
 		port: globalConfig.get(`/database/${whichDB}/PORT`) || 3306,
-		logging: true
+		logging: false
 	} 
 
 )

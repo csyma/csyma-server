@@ -1,9 +1,9 @@
 /*
  * File:     first_time_setup.js
  * Author:   Brian Onang'o
- * Company:	Csyber Systems
+ * Company:  Csyber Systems
  * Website:  http://familyfe.csymapp.com
- * E-mail:   brian@csymapp.com, brian@cseco.co.ke, surgbc@gmail.com
+ * E-mail:   brian@cseco.co.ke, surgbc@gmail.com, brian@csymapp.com
  * Created:	Feb 2018
  *
  * Description
@@ -23,18 +23,13 @@ const globalConfig = require(__dirname+'/../apps/csystem').globalConfig
 const {sequelize} = require(__dirname+'/../apps/csystem').models
 const Familyfe = require(__dirname+'/../modules/node-familyfe')(sequelize)
 
-// const World = familyfe.World(sequelize)
-// dotenv.config({ silent: false });
-// dotenv.load({ path: __dirname+'/../.env' });
-//setup with system defaults or user inputs
-
 class firstTimeSetup extends csystem
 {
-
 	constructor()
 	{
 		super()
 	}
+
 
 	async first_time_setup()
 	{
@@ -43,15 +38,83 @@ class firstTimeSetup extends csystem
 
 		// //sync db
 		;[err, dontcare] = await to (self.dbSync(true))
-		if(err)return Promise.reject(err)
+		if(err) throw (err)
 
 		console.log('Setting up Apps');
 		;[err, care] = await to(Familyfe.apps.setupallapps())
 
 		if(err){
 			console.log(err)
-			return Promise.reject(err)
+			if(err) throw (err)
 		}
+
+		console.log('Setting up system families')
+		;[err, care] = await to(Familyfe.Family.create({
+			FamilyName:'World',
+	    	hierarchyLevel:null,
+	    	parentFamilyId: null
+		}))
+		if(err){
+			console.log(err)
+			if(err) throw (err)
+		}
+
+		let FamilyId = care;
+		console.log(`Installing apps for ${FamilyId}`)
+		
+		;[err, care] = await to(Familyfe.apps.installAppsforFamily({
+			FamilyId,
+	    	Apps:'all'
+		}))
+		if(err){
+			console.log(err)
+			if(err) throw (err)
+		}
+
+		console.log('setting up test family')
+		;[err, care] = await to(Familyfe.Family.create({
+			FamilyName:'TestFamily',
+	    	hierarchyLevel:null,
+	    	parentFamilyId: null
+		}))
+		if(err){
+			console.log(err)
+			if(err) throw (err)
+		}
+
+		FamilyId = care;
+		console.log(`Installing apps for ${FamilyId}`)
+		
+		;[err, care] = await to(Familyfe.apps.installAppsforFamily({
+			FamilyId,
+	    	Apps:'all'
+		}))
+		if(err){
+			console.log(err)
+			if(err) throw (err)
+		}
+
+		// await Familyfe.apps.installAppsforAllFamilies({
+		// 	FamilyId,
+	 //    	Apps:'all'
+		// })
+		console.log(`Creating Users`)
+
+		
+		// ;[err, care] = await to(Familyfe.apps.installAppsforFamily())
+		
+		/*
+		 * installing apps:
+		 	4. installfornewUser
+		 		
+		 	3. modifyuserRoles
+
+		 	2. setUp a singleApp
+		 		affect only its models...
+		 		from request, or from other testFile..
+
+		 	..................1. set also app to be disabled....
+		 */
 
 		let rootEmail = globalConfig.get('/rootEmail');
 		console.log(`rootEmail: ${rootEmail}`);
@@ -69,14 +132,15 @@ class firstTimeSetup extends csystem
 				Cpassword:rootPassword, 
 				IsActive:true,
 				},
-			IsActive:true
+			IsActive:true,
+			Families: [2, 1, 0]
 		}));
 		if(err){
 			console.log(err)
 			return Promise.reject(err)
 		}
 
-		let uid = care.uid;
+		let rootuid = care.uid;
 		
 		// ;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(uid, 'csystem', ['nobody', 'root'])) // 0 is all apps
 
@@ -90,28 +154,92 @@ class firstTimeSetup extends csystem
 				Cpassword:rootPassword, 
 				IsActive:true,
 				},
-			IsActive:true
+			IsActive:true,
+			Families: [2, 1]
 		}))
 		
 		if(err){
 			console.log(err)
 			return Promise.reject(err)
 		}
+		let guestuid = care.uid;
+		/*
+			Add user to world.......................................................*
+			Add user to some other family...... if it is given......................*
+
+
+			Create user roles.......................................................*
+
+			// create endpoints for apps...
+				familyfe
+				api/csystem
+				vipimo
+				hymnal
+				ropebot
+
+				user_accout_management
+		*/
+
+		console.log('creating Roles in World for rootUser');
+		;[err, care] = await to(Familyfe.Family.getApps(1))
+		if(err){
+			console.log(err)
+			throw (err)
+		}
+		let tmproles = care,
+			roles = [];
+		console.log(roles)
+		;[err, care] = await to(Familyfe.Family.getMember(1, rootuid))
+		// get memberId
+		if(err){
+			console.log(err)
+			throw (err)
+		}
 		// console.log(care)
-		let guid = care.uid;
-		;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(guid, 0, ['nobody'])) // 0 is all apps
-		;[err, care] = await to(Familyfe.apps.createAppGroupsofuser(uid, 0, ['nobody', 'user', 'root'])) // 0 is all apps
-		
-		// //errors
-		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:guestEmail, Cpassword:guestEmail, IsActive:true}))
-		// // console.log(err)
-		// // if(err)return Promise.reject(err)
-		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Password:"DUS", Cpassword:guestEmail, IsActive:true}))
-		// // console.log(err)
-		// // if(err)return Promise.reject(err)
-		// // ;[err, care] = await to (Familyfe.Person.beget({Name:"Brian Onang'o", Email:guestEmail.toLowerCase(), Cpassword:guestEmail, IsActive:true}))
-		// // console.log(err)
-		// // if(err)return Promise.reject(err)
+		let memberId = care
+
+		for(let i in tmproles){
+			// console.log(tmproles[i].App.Roles)
+			for(let j in tmproles[i].App.Roles)
+				roles.push(tmproles[i].App.Roles[j].RoleId)
+		}
+		console.log(roles)
+		;[err, care] = await to(Familyfe.Family.createRolesforMember(memberId, roles))
+		if(err){
+			console.log(err)
+			throw (err)
+		}
+
+
+		console.log('creating Roles in World for guestUser');
+		;[err, care] = await to(Familyfe.Family.getspecificMemberRoleforFamily(1, "nobody"))
+		if(err){
+			console.log(err)
+			throw (err)
+		}
+		tmproles = care
+		roles = [];
+		console.log(roles)
+		;[err, care] = await to(Familyfe.Family.getMember(1, guestuid))
+		// get memberId
+		if(err){
+			console.log(err)
+			throw (err)
+		}
+		// console.log(care)
+		memberId = care
+		for(let i in tmproles){
+			// console.log(tmproles[i].App.Roles)
+			for(let j in tmproles[i].App.Roles)
+				roles.push(tmproles[i].App.Roles[j].RoleId)
+		}
+		console.log(roles)
+		;[err, care] = await to(Familyfe.Family.createRolesforMember(memberId, roles))
+		if(err){
+			console.log(err)
+			throw (err)
+		}
+
 		return true
 	}
 

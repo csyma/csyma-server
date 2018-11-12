@@ -19,6 +19,7 @@ const config = {
         user:"free",
         nobody:"free"
     },
+    Enabled: true,
     groups: [
         "nobody",
         "user",

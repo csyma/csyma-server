@@ -1,10 +1,14 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-	const FamilieMember = sequelize.define('FamilieMember', {
-		FamilyMemberId: {
+	const Family = sequelize.define('Family', {
+		FamilyId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
+		},
+		FamilyName: {
+			type: DataTypes.STRING(32),
+			allowNull: false
 		}
 	},
 	{
@@ -14,8 +18,11 @@ module.exports = (sequelize, DataTypes) => {
 
 	})
 
-	FamilieMember.associate = function (models) {
-	    FamilieMember.hasMany(models.AppFamilyMember, {
+
+	Family.isHierarchy();
+
+	Family.associate = function (models) {
+	    Family.hasMany(models.FamilyMember, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -23,14 +30,15 @@ module.exports = (sequelize, DataTypes) => {
 			}
 	    });
 
-	    FamilieMember.hasMany(models.MemberRoles, {
+	    Family.hasMany(models.InstalledApp, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
 				allowNull: false
 			}
 	    });
+
 	}
 
-	 return FamilieMember;
+	 return Family;
 }

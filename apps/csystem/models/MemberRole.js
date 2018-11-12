@@ -1,12 +1,11 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-	const MemberRoles = sequelize.define('MemberRoles', {
-		RolesofMemberId: {
+	const MemberRole = sequelize.define('MemberRole', {
+		MemberRoleId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		}
-
 	},
 	{
 		hooks: {
@@ -15,5 +14,6 @@ module.exports = (sequelize, DataTypes) => {
 
 	})
 
-	 return MemberRoles;
+
+	 return MemberRole;
 }

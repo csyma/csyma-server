@@ -17,12 +17,12 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
 		},
-		// Enabled: {
-		// 	type:DataTypes.BOOLEAN,
-		// 	allowNull: false, 
-		// 	defaultValue: false
-		// },
 		AutoInstall: {
+			type:DataTypes.BOOLEAN,
+			allowNull: false, 
+			defaultValue: true
+		},
+		Enabled: {
 			type:DataTypes.BOOLEAN,
 			allowNull: false, 
 			defaultValue: true
@@ -37,20 +37,21 @@ module.exports = (sequelize, DataTypes) => {
 
 
 	App.associate = function (models) {
-	    App.hasMany(models.AppGroup, {
+	    App.hasMany(models.InstalledApp, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
 				allowNull: false
 			}
 	    });
-	  //   App.hasMany(models.AppUser, {
-	  //   	onDelete: "CASCADE",
-	  //   	onUpdate: "CASCADE",
-			// foreignKey: {
-			// 	allowNull: false
-			// }
-	  //   });
+
+	    App.hasMany(models.Role, {
+	    	onDelete: "CASCADE",
+	    	onUpdate: "CASCADE",
+			foreignKey: {
+				allowNull: false
+			}
+	    });
 	}
 
 

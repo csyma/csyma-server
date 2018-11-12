@@ -1,18 +1,11 @@
 'use strict'
-
 module.exports = (sequelize, DataTypes) => {
-	const NodeEncoding = sequelize.define('NodeEncoding', {
-		NodeEncodingId: {
+	const FamilyMember = sequelize.define('FamilyMember', {
+		FamilyMemberId: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
-		},
-		Encoding: {
-			type: DataTypes.STRING(16),
-			allowNull: false,
-			unique:true
 		}
-
 	},
 	{
 		hooks: {
@@ -21,9 +14,8 @@ module.exports = (sequelize, DataTypes) => {
 
 	})
 
-
-	NodeEncoding.associate = function (models) {
-	    NodeEncoding.hasMany(models.Node, {
+	FamilyMember.associate = function (models) {
+	    FamilyMember.hasMany(models.MemberRole, {
 	    	onDelete: "CASCADE",
 	    	onUpdate: "CASCADE",
 			foreignKey: {
@@ -32,7 +24,5 @@ module.exports = (sequelize, DataTypes) => {
 	    });
 	}
 
-
-
-	 return NodeEncoding;
+	 return FamilyMember;
 }
